@@ -13,13 +13,12 @@ RUN apt-get update && apt-get install -y libportaudio2 software-properties-commo
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/w-okada/voice-changer.git /app
-RUN cd app
 WORKDIR /app
 RUN pip install --no-cache-dir faiss-gpu fairseq pyngrok
 RUN pip install --no-cache-dir pyworld --no-build-isolation
-RUN pip install --no-cache-dir -r requirements.txt
-RUN !pip uninstall -y torch torchaudio
-RUN !pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
+RUN cd /app && pip install --no-cache-dir -r requirements.txt
+RUN pip uninstall -y torch torchaudio
+RUN pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
 EXPOSE 8000
 CMD ["python3", "MMVCServerSIO.py", \
      "-p", "8000", \
