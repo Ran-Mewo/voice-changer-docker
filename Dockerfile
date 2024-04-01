@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y libportaudio2 software-properties-commo
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone https://github.com/w-okada/voice-changer.git /app
-RUN CD app
+RUN cd app
 WORKDIR /app
 RUN pip install --no-cache-dir faiss-gpu fairseq pyngrok
 RUN pip install --no-cache-dir pyworld --no-build-isolation
