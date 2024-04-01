@@ -1,7 +1,8 @@
-FROM nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu22.04
+FROM nvidia/cuda:12.2.0-devel-ubuntu20.04
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y libportaudio2 software-properties-common git && \
     add-apt-repository ppa:deadsnakes/ppa && \
