@@ -1,22 +1,29 @@
 FROM pytorch/pytorch:2.2.2-cuda12.1-cudnn8-runtime
-
-#ENV PYTHONDONTWRITEBYTECODE 1
-#ENV PYTHONUNBUFFERED 1
 ARG DEBIAN_FRONTEND=noninteractive
-
 RUN apt-get update && apt-get install -y g++ gcc libportaudio2 git
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN git clone https://github.com/w-okada/voice-changer.git /app
 WORKDIR /app/server
+
+# Install pre-dependencies
 RUN pip install --no-cache-dir faiss-gpu fairseq pyngrok
 RUN pip install --no-cache-dir pyworld --no-build-isolation
+
+# Install dependencies (excluding torch as it's already installed)
 RUN grep -v 'torch\|torch-audio' requirements.txt > requirements_no_torch.txt
 RUN pip install --no-cache-dir -r requirements_no_torch.txt
 RUN rm requirements_no_torch.txt
+### TODO: Find a way to not accidentally remove 'torchcrepe' & 'torchfcpe' and also a way to install them without it automatically installing the torch package
 RUN pip install torchcrepe torchfcpe --no-cache-dir --no-deps
+
+# Install CUDA-12 compatible onnxruntime
 RUN pip uninstall onnxruntime-gpu -y
 RUN pip install onnxruntime-gpu --extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ --no-cache-dir
+
+# Expose port 8000
 EXPOSE 8000
+
+# Command to run the server
 CMD ["python3", "MMVCServerSIO.py", \
      "-p", "8000", \
      "--https", "False", \
